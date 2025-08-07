@@ -69,14 +69,16 @@ if {[info exist ::env(PHY_SYNTH)] && $::env(PHY_SYNTH) == 1} {
     source ../../../../util/gen_pb.tcl
     gen_pb_netlist
 } else {
-    defIn $floorplan_def
-    addHaloToBlock -allMacro $HALO_WIDTH $HALO_WIDTH $HALO_WIDTH $HALO_WIDTH
-    place_design -concurrent_macros
-    refine_macro_place
+    # defIn $floorplan_def
+    # addHaloToBlock -allMacro $HALO_WIDTH $HALO_WIDTH $HALO_WIDTH $HALO_WIDTH
+    floorPlan -keepShape 0.6
+    place_design
+    # -concurrent_macros
+    # refine_macro_place
 }
 
 ### Write out the def files ###
-source ../../../../util/write_required_def.tcl
+# source ../../../../util/write_required_def.tcl
 
 ### Add power plan ###
 source ../../../../../Enablements/NanGate45/util/pdn_config.tcl

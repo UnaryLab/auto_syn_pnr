@@ -22,5 +22,5 @@ The command to launch the P&R run is as follows.
 ```
 ### Make sure you have run the synthesis step. run_invs.tcl uses the output files generated synthesis ###
 # export PHY_SYNTH=0   #For Flow-1 uncomment this line
-innovus -64 -init run_invs.tcl -log log/run.log
+innovus -64 -init run_invs.tcl -log log/innovus.log
 ```
