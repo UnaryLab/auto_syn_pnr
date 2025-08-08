@@ -67,6 +67,7 @@ mkdir -p ./Flows/$technode
 
 cd ./Flows/$technode
 
+run_dir=$(pwd)
 
 single_run () {
     local technode="$1"
@@ -136,7 +137,15 @@ single_run () {
 
     mkdir log -p
     genus -overwrite -log log/genus.log -no_gui -files run_genus_hybrid.tcl
+    innovus -64 -overwrite -log log/innovus.log -files run_invs.tcl
     echo ""
+    
+    mkdir $run_dir/../../syn_pnr_rpt -p
+    mkdir $run_dir/../../syn_pnr_rpt/$technode -p
+    mkdir $run_dir/../../syn_pnr_rpt/$technode/$module -p
+    cp "${module}_DETAILS.rpt" $run_dir/../../syn_pnr_rpt/$technode/$module
+    cp "${module}_CRITICAL_PATH.rpt" $run_dir/../../syn_pnr_rpt/$technode/$module
+    cd $run_dir
 }
 
 
@@ -145,7 +154,7 @@ if [ -n "$module" ]; then
 else
     echo "No module specified, run all modules"
     echo ""
-    for module_inst in $(ls -d ../../src/*)
+    for module_inst in $(find ../../src/ -mindepth 1 -maxdepth 1 -type d);
     do
         single_run $technode $module_inst
     done

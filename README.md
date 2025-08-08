@@ -4,11 +4,12 @@ Scripts for synthesis and place-and-route using **Cadence Genus and Innovus**, a
 Input RTL for a ```<module>``` needs to be Verilog files (.v), and shall be placed in ```src/<module>/<module>.v```.
 The Verilog top module requires a name ```<module>```.
 
+
 ## Synthesis
 
 ```bash auto_syn.sh $technode $module``` runs the synthesis using [flow-1](Flows/figures/flow-1.PNG).
 
-```$technode``` can be ```ASAP7``` or ```NanGate45```, and defaults to ```ASAP7``` if not specified.
+```$technode``` can be ```ASAP7``` or ```NanGate45```, and defaults to ```NanGate45``` if not specified.
 
 ```$module``` is optional. If specified, it must match the exact module name. If not specified, it will traverse all modules in ```src```.
 
@@ -18,7 +19,23 @@ The Verilog top module requires a name ```<module>```.
 ```bash auto_pnr.sh $technode $module``` runs the place-and-route using [flow-1](Flows/figures/flow-1.PNG).
 Make sure to run place-and-route after successful synthesis.
 
-```$technode``` can be ```ASAP7``` or ```NanGate45```, and defaults to ```ASAP7``` if not specified.
+```$technode``` can be ```ASAP7``` or ```NanGate45```, and defaults to ```NanGate45``` if not specified.
 
 ```$module``` is optional. If specified, it must match the exact module name. If not specified, it will traverse all modules in ```src```.
 
+
+## Synthesis and place-and-route
+
+```bash auto_syn_pnr.sh $technode $module``` runs both synthesis and place-and-route using [flow-1](Flows/figures/flow-1.PNG).
+Make sure to run place-and-route after successful synthesis.
+
+```$technode``` can be ```ASAP7``` or ```NanGate45```, and defaults to ```NanGate45``` if not specified.
+
+```$module``` is optional. If specified, it must match the exact module name. If not specified, it will traverse all modules in ```src```.
+
+
+## Frequency
+
+The default frequency of all synthesis and place-and-route is 400MHz.
+To use a different frequency, ```export CLK_PERIOD=<clock period in nano seconds>```
+    

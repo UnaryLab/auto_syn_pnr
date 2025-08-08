@@ -7,7 +7,7 @@ alias cp="cp -i"
 unalias cp
 
 # Read optional arguments
-technode="${1:-ASAP7}"   # Default: ASAP7
+technode="${1:-NanGate45}"   # Default: ASAP7
 module="${2:-}"          # Default: empty string
 
 # Validate input

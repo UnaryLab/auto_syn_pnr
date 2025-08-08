@@ -1,3 +1,6 @@
+Flows/ASAP7/*
+Flows/NanGate45/*
+syn_pnr_rpt
 Flows/*/*/run/*/
 Flows/*/*/run-*
 Flows/job

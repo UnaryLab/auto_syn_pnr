@@ -58,7 +58,7 @@ generateVias
 createBasicPathGroups -expanded
 
 ### Write postSynth report ###
-echo "Physical Design Stage, Core Area (um^2), Standard Cell Area (um^2), Macro Area (um^2), Total Power (mW), Wirelength(um), WS(ns), TNS(ns), Congestion(H), Congestion(V)" > ${DESIGN}_DETAILS.rpt
+echo "Physical Design Stage, Core Area (um^2), Standard Cell Area (um^2), Macro Area (um^2), Total Power (mW), Leakage Power (mW), Dynamic Power (mW), Wirelength(um), WS(ns), TNS(ns), Congestion(H), Congestion(V)" > ${DESIGN}_DETAILS.rpt
 source ../../../../util/extract_report.tcl
 set rpt_post_synth [extract_report postSynth]
 echo "$rpt_post_synth" >> ${DESIGN}_DETAILS.rpt
@@ -94,23 +94,38 @@ setDesignMode -bottomRoutingLayer 2
 place_opt_design -out_dir $rptDir -prefix place
 saveDesign $encDir/${DESIGN}_placed.enc
 
-set rpt_pre_cts [extract_report preCTS]
-echo "$rpt_pre_cts" >> ${DESIGN}_DETAILS.rpt
+# Capture the output of get_clocks
+set clk_report [get_clocks *]
 
-set_ccopt_property post_conditioning_enable_routing_eco 1
-set_ccopt_property -cts_def_lock_clock_sinks_after_routing true
-setOptMode -unfixClkInstForOpt false
+echo "Report clock..."
+echo $clk_report
 
-create_ccopt_clock_tree_spec
-ccopt_design
+# Check if clocks exist
+if {[string length $clk_report] > 0} {
+    puts "🔔 Clocks detected — performing CTS..."
 
-set_interactive_constraint_modes [all_constraint_modes -active]
-set_propagated_clock [all_clocks]
-set_clock_propagation propagated
+    set rpt_pre_cts [extract_report preCTS]
+    echo "$rpt_pre_cts" >> ${DESIGN}_DETAILS.rpt
 
-saveDesign $encDir/${DESIGN}_cts.enc
-set rpt_post_cts [extract_report postCTS]
-echo "$rpt_post_cts" >> ${DESIGN}_DETAILS.rpt
+    set_ccopt_property post_conditioning_enable_routing_eco 1
+    set_ccopt_property -cts_def_lock_clock_sinks_after_routing true
+    setOptMode -unfixClkInstForOpt false
+
+    create_ccopt_clock_tree_spec
+    ccopt_design
+
+    set_interactive_constraint_modes [all_constraint_modes -active]
+    set_propagated_clock [all_clocks]
+    set_clock_propagation propagated
+
+    saveDesign $encDir/${DESIGN}_cts.enc
+    set rpt_post_cts [extract_report postCTS]
+    echo "$rpt_post_cts" >> ${DESIGN}_DETAILS.rpt
+
+} else {
+    puts "🚫 No clocks found — skipping CTS step."
+}
+
 
 # ------------------------------------------------------------------------------
 # Routing
@@ -154,5 +169,7 @@ echo "$rpt_post_route" >> ${DESIGN}_DETAILS.rpt
 summaryReport -noHtml -outfile summaryReport/post_route.sum
 saveDesign ${encDir}/${DESIGN}.enc
 defOut -netlist -floorplan -routing ${DESIGN}.def
+
+report_timing -max_paths 1 > ${DESIGN}_CRITICAL_PATH.rpt
 
 exit
